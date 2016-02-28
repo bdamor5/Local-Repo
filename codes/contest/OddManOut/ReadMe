@@ -1,0 +1,78 @@
+/*****************************************************************************
+ *                 Intership Programming Contest OddManOut                  *
+ *                 ----------------------------------------                  *
+ * To allow contest participants to test a function which accepts an array   *
+ * of integers (and the number of elements) and detect the odd number of     *
+ * potentiallly longest sequence where every term = sum of previous 2 terms  *
+ * Eachh identified sequence will have exactly one number incorrect          *
+ * Inputs : I.1) Number of elements in array                                 *
+ *          I.2) Array of integers containing possible sequences             *
+ * Outputs: O.1) Total Number of odd man out sequences found                 *
+ *          O.2) Array of integers storing start and stop of sequences       *
+ *                                                                           *
+ * Note : Longest sequences to be found                                      *
+ *        No sequence should be subset of another                            *
+ *                                                                           *
+ *****************************************************************************/
+
+/*****************************************************************************
+ *                                  Sample                                   *
+ *                                  ------                                   *
+ * The contest can be explained with certain sample inputs and outputs       *
+ *                                                                           *
+ *  Example 1: a clear sequence without any error                            *
+ *  I.1 = 8 I.2 = 5 -3 2 -1 1 0 1 1                                          *
+ *  O.1 = 0 O.2 =                                                            *
+ *  Description : need an error element                                      *
+ *                                                                           *
+ *  Example 2: a correct sequence of 4 or more in middle without any error   *
+ *  I.1 = 8 I.2 = 2 3 -6 4 -2 2 0 7                                          *
+ *  O.1 = 2 O.2 = 1 6 2 7                                                    *
+ *  Description : changing first and last element to correct sequence        *
+ *                10(3) -6 4 -2 2 0 and -6 4 -2 2 0 2(7)                     *
+ *                                                                           *
+ *  Example 3: Second and 4th element incorrect                              *
+ *  I.1 = 8 I.2 = 1 5 8 12 19 31 71 81                                       *
+ *  O.1 = 2 O.2 = 1 5 3 7                                                    *
+ *  Description : 5 7(8) 12 19 31 and 12 19 31 50(71) 81                     *
+ *                                                                           *
+ *  Example 4: Consecutive elements incorrect in two sequences               *
+ *  I.1 = 9 I.2 = 2 7 -5 2 -4 -1 2 8 10                                      *
+ *  O.1 = 2 O.2 = 1 5 4 8                                                    *
+ *  Description : 7 -5 2 -3(-4) -1 and -4 6(-1) 2 8 10                       *
+ *                                                                           *
+ * the tests would cover many more complex cases                             *
+ * The encoding should be as above                                           *
+ *                                                                           *
+ *****************************************************************************/
+
+/*****************************************************************************
+ * ZIP file contains:                                                        *
+ *     ReadMe file              : Explains the contest                       *
+ *     testOddManOut.c          : Only end section of file to be modified    *
+ *     (you can edit testOddManOut.c and then test your entry)               *
+ *     makefile (for unix)      : create executable OddManOut by typing make *
+ *     test by typing ./OddManOut -i <test file> -o <output file>            *
+ *     test/t1,t2...            : test files                                 *
+ *     test/t1.out,t2.out  ...  : expected outputs                           *
+ * 1) edit testOddManOut.c (add your code - do not add any include files)    *
+ * 2) Create OddManOut by typing make on the command line                    *
+ * 3) Test OddManOut code on the tests provided and create outputs           *
+ * 4) Debug your code to create exact outputs                                *
+ * 5) Test your file with different (and additional) test files              *
+ * 6) Remember that the contest tests will be more severe                    *
+ * 7) Submit your entry (your additional code) codzilla.org.in               *
+ *                                                                           *
+ *****************************************************************************/
+
+/*****************************************************************************
+ *                       Source Code Organisation                            *
+ *                       ------------------------                            *
+ * testOddManOut.c                                                           *
+ * This file allows the participant to test his function for correctness     *
+ * This file contains C++ code which opens the input stream, reads the file  *
+ * into an array, calls the contestants encoding function and writes the     *
+ * data in the output file                                                   *
+ * A correct entry will produce an exactly equivalent file                   *
+ *                                                                           *
+ *****************************************************************************/
