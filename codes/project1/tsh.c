@@ -1,8 +1,9 @@
 /* 
  * tsh - A tiny shell program with job control
  * 
- * Uttam Chaudhari - ID-201401457
- */
+ * Uttam Chaudhari 
+ * 201401457@daiict.ac.in	 
+*/ 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -166,23 +167,25 @@ int main(int argc, char **argv)
 void eval(char *cmdline) 
 {
   char **argv = (char **)malloc(1024);
-  int stat = parseline(cmdline,argv);
-  int x = builtin_cmd(argv);
+  int stat = parseline(cmdline,argv);  /* Here value of 'stat' indicates in which mode user requested process to run i.e. BG or FG */
+  int x = builtin_cmd(argv);          /* Here value of 'x' indicates if requisted command is built in or not */
 
-  sigset_t set;
+  sigset_t set;                      /* for signal blocking-unblocking */
  
   sigemptyset(&set);
   sigaddset(&set,SIGCHLD);
   if(x==0)
   {
-	sigprocmask(SIG_BLOCK,&set,NULL);     /* Here we are blocking the SIGCHLD signal so that we can add child process in job table
-						 before it gets terminated */
+	if(sigprocmask(SIG_BLOCK,&set,NULL)==-1)	 /* Here we are blocking the SIGCHLD signal so that we can add child process in job 
+							table before it gets terminated */
+		unix_error("sigprocmask failed");
+
 	int pid;
 	if((pid=fork())==0)
 	{
 		setpgrp();	
 		execvp(*argv,argv);
-		printf("%s : Command not found\n",*argv);
+		printf("%s : Command not found\n",*argv);      /* control reaches here if and only if there is no such process to run */
 		exit(0);
 	}
 	if(stat!=0)
@@ -191,9 +194,10 @@ void eval(char *cmdline)
 		printf("[%d] (%d) %s",pid2jid(pid),pid,cmdline);
 	}
 	else
-		addjob(jobs,pid,FG,cmdline);
-	sigprocmask(SIG_UNBLOCK,&set,NULL);
-	waitfg(pid);
+		addjob(jobs,pid,FG,cmdline);			/* After adding job to job table we now unblock the SIGCHLD signal */
+		if(sigprocmask(SIG_UNBLOCK,&set,NULL)==-1)
+			unix_error("sigprocmask failed");
+	waitfg(pid);					/* Wait for job until it is in FG mode */
   }
 	
   return;
@@ -270,7 +274,8 @@ int builtin_cmd(char **argv)
 	for(i=0;i<nextjid;i++)
 		if(jobs[i].state==ST)
 			printf("[%d] (%d) stopped %s",jobs[i].jid,jobs[i].pid,jobs[i].cmdline);
-	if(nextjid!=1)		/* If there is a stopped job then return to main else exit the shell */
+
+	if(nextjid!=1)				/* If there is a stopped or background job then return to main else exit the shell */
 		return 1;
 	exit(0);
     }
@@ -298,6 +303,8 @@ int builtin_cmd(char **argv)
  */
 void do_bgfg(char **argv) 
 {
+/* Here initially error checking is done and if there are no error than perform corresponding task */
+
     if(strcmp("fg",argv[0])==0)
     {
 	if(argv[1]==NULL)
@@ -309,16 +316,17 @@ void do_bgfg(char **argv)
 		{
 			struct job_t *jb = getjobjid(jobs,jid);
 			if(jb==NULL)
-				printf("fg %%%d: no such job\n",jid);
+				printf("%%%d: No such job\n",jid);
 			else
 			{
-				if(jb->state==ST)             /* Sending SIGCONT signal to Stopped process group and wait */
+				if(jb->state==ST)             /* Sending SIGCONT signal to Stopped process group and wait for that process */
 				{
-					kill(-jb->pid,SIGCONT);        
+					if(kill(-jb->pid,SIGCONT)==-1)
+						unix_error("kill failed");        
 					jb->state=FG;
 					waitfg(jb->pid);
 				}
-				if(jb->state==BG)           /* Change the state of background process and wait*/
+				if(jb->state==BG)           /* Change the state of background process to forground and wait for that process*/
 				{
 					jb->state=FG;
 					waitfg(jb->pid);
@@ -335,16 +343,17 @@ void do_bgfg(char **argv)
 		{
 			struct job_t *jb = getjobpid(jobs,pid);
 			if(jb==NULL)
-				printf("fg %d: no such job\n",pid);
+				printf("(%d): No such job\n",pid);
 			else
 			{
-				if(jb->state==ST)             /* Sending SIGCONT signal to Stopped process group  and wait */
+				if(jb->state==ST)             /* Sending SIGCONT signal to Stopped process group and wait for that process */
                                 {
-                                        kill(-jb->pid,SIGCONT);
+                                        if(kill(-jb->pid,SIGCONT)==-1)
+						unix_error("kill failed");
                                         jb->state=FG;
                                         waitfg(jb->pid);
                                 }
-                                if(jb->state==BG)           /* Change the state of background process and wait*/
+                                if(jb->state==BG)           /* Change the state of background process to forground and wait for that process*/
                                 {
                                         jb->state=FG;
                                         waitfg(jb->pid);
@@ -370,12 +379,13 @@ void do_bgfg(char **argv)
                 {
 			struct job_t *jb = getjobjid(jobs,jid);
                 	if(jb==NULL)
-                        	printf("bg %%%d: no such job\n",jid);
+                        	printf("%%%d: No such job\n",jid);
 			else
 			{
 				if(jb->state==ST)             /* Sending SIGCONT signal to Stopped process group */
                                 {
-                                        kill(-jb->pid,SIGCONT);
+                                       if(kill(-jb->pid,SIGCONT)==-1)
+						unix_error("Kill failed");
                                         jb->state=BG;
 					printf("[%d] (%d) %s",jb->jid,jb->pid,jb->cmdline);
                                 }
@@ -391,12 +401,13 @@ void do_bgfg(char **argv)
                 {
 			struct job_t *jb = getjobpid(jobs,pid);
                 	if(jb==NULL)
-                        	printf("bg %d: no such job\n",pid);
+                        	printf("(%d): No such job\n",pid);
 			else
                         {
                                 if(jb->state==ST)             /* Sending SIGCONT signal to Stopped process group */
                                 {
-                                        kill(-jb->pid,SIGCONT);
+                                        if(kill(-jb->pid,SIGCONT))
+						unix_error("kill failed");
                                         jb->state=BG;
                                 }
                         }
@@ -417,7 +428,7 @@ void do_bgfg(char **argv)
 void waitfg(pid_t pid)
 {
    struct job_t *job = getjobpid(jobs,pid);
-   while(job->state==FG)  
+   while(job->state==FG)  			
 	sleep(1);
 	
    
@@ -450,7 +461,7 @@ int stat;
 		struct job_t *job = getjobpid(jobs,pid);
 		job->state = ST;                               /* Changing state of job */
 	}
-	else if (WIFSIGNALED(stat))   
+	else if (WIFSIGNALED(stat))   /* If process is signaled */
      	{
 		printf("Job [%d] (%d) terminated by signal %d\n",pid2jid(pid),pid,WTERMSIG(stat));
 		deletejob(jobs,pid);
@@ -471,7 +482,8 @@ void sigint_handler(int sig)
 {
     int pid;
     if((pid=fgpid(jobs)))
-	kill(-pid,SIGINT);
+	if(kill(-pid,SIGINT)==-1)
+		unix_error("kill failed");			/* '-pid' used for send signal to whole forground process group */
     return;
 }
 
@@ -484,10 +496,9 @@ void sigtstp_handler(int sig)
 {
     int pid; 
    
-    if((pid=fgpid(jobs)))
-    {
-	kill(-pid,SIGTSTP);
-    }
+    if((pid=fgpid(jobs)))			
+	if(kill(-pid,SIGTSTP)==-1)
+		unix_error("kill failed");			/* '-pid' used for send signal to whole forground process group */
     return;
 }
 
@@ -709,7 +720,7 @@ void sigquit_handler(int sig)
     printf("Terminating after receipt of SIGQUIT signal\n");
     exit(1);
 }
-int toInt(char *str)
+int toInt(char *str)        /* convert srting into integer. If not possible then return -1. */
 {
 	int i=0;
 	while(*(str+i)!='\0')

@@ -37,7 +37,8 @@
 
 /* Local function prototypes */
 int OddManOut(int nElems, int *iA, int *oA);
-
+int max(int a,int b);
+int check(int num1,int num2,int num3,int pos,int nElems,int *iA);
 /* Local #defines */
 #define MAXLENGTH	(100)
 #define SUCCESS		(0)
@@ -235,7 +236,66 @@ int nSeq;                     /* The number of sequences */
 
     /* Initialise */
     nSeq   = 0;
+    int i,pos=0;
+    int c=0;
+	int max1=0;
+    for(i=2;i<nElems;i++)
+    {
+	   if(iA[i]==iA[i-1]+iA[i-2])
+		continue;
+         	   else
+	   {
+		int a = check(iA[i]-iA[i-1],iA[i-1],iA[i],i+1,nElems,iA);
+		int b = check(iA[i-2],iA[i]-iA[i-2],iA[i],i+1,nElems,iA);
+		int d = check(iA[i-2],iA[i-1],iA[i-1]+iA[i-2],i+1,nElems,iA);
+		if(pos!=i-2)
+			a=b=0;
+//		printf("%d %d %d %d\n",i,a,b,d);
+		int m =max(max(a,b),d);
+		if(m-pos+1>4 && m>max1)
+		{
+			max1=m;  
+			oA[c++] = pos;
+			oA[c++] = m;
+			nSeq++;
+		}
+		
+			i=pos+2;				
+	 pos++;
+//	printf("%d\n",m);
+	   }
 
+    }	
+printf("%d\n",nSeq);
+for(i=0;i<2*nSeq;i++)
+	printf("%d ",oA[i]);
+printf("\n");
     /* Return number of sequences */
     return(nSeq);
+}
+int max(int a,int b)
+{
+if(a>b)
+return a;
+else
+return b;
+}
+int check(int num1,int num2,int num3,int pos,int nElems,int *iA)
+{
+int i;
+	for(i=pos;i<nElems;i++)
+	{
+		if(iA[i]==num2+num3)
+		{
+			num2=num3;
+			num3=iA[i];	
+			pos++;
+		}
+		else
+		{
+//			printf("%d %d %d\n",iA[i],num2,num3);
+			break;
+		}
+	}
+return pos-1;
 }
