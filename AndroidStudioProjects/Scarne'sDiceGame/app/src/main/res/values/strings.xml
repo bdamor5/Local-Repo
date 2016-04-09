@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Scarne\'s dice</string>
+    <string name="score_text_view">Your score: 0  Computer Score: 0</string>
+    <string name="user_score">0</string>
+    <string name="score_text_view2">Computer\'s score:</string>
+    <string name="pc_score">0</string>
+    <string name="roll_button_text">Roll</string>
+    <string name="hold_button_text">Hold</string>
+    <string name="reset_button_text">Reset</string>
+</resources>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.android.scarnesdice.MainActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/score_text_view"
+        android:id="@+id/scoreTextView1"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/dice1"
+        android:layout_below="@id/scoreTextView1"
+        android:padding="32dp"
+        android:id="@+id/imageView"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/roll_button_text"
+        android:layout_below="@id/imageView"
+        android:id="@+id/rollButton"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/hold_button_text"
+        android:layout_toRightOf="@id/rollButton"
+        android:layout_below="@id/imageView"
+        android:layout_marginLeft="4dp"
+        android:id="@+id/holdButton"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/reset_button_text"
+        android:layout_below="@id/imageView"
+        android:layout_toRightOf="@id/holdButton"
+        android:layout_marginLeft="4dp"
+        android:id="@+id/resetButton"/>
+
+</RelativeLayout>
