@@ -1,0 +1,116 @@
+import java.util.*;
+class Q1 
+{
+	static int mod = 1000000007;
+	static long n;
+	public static void main(String[] args)
+	{
+		Scanner sc = new Scanner(System.in);
+		n = sc.nextLong();
+		long m = sc.nextLong();
+	
+		int size = (int)(2*n);
+		//System.out.println(size);
+		long arr[][] = new long[size][4];
+		//System.out.println(fib(6)[0]);
+		for(int i=0;i<n;i++)
+		{
+			arr[(int) (n+i)] = fib(sc.nextLong());
+		}
+		
+		  for (int i =(int) n-1; i > 0; i--)
+			  arr[i] = add(add(arr[i<<1],arr[i<<1|1]),multiply(arr[i<<1],arr[i<<1|1]));
+		
+		  System.out.println(query(arr,0,1)[1]);
+		  System.out.println(arr[3][0]+" "+arr[4][0]+" "+multiply(arr[3],arr[4])[0]);
+		for(int i=0;i<size;i++)
+			System.out.println(arr[i][0]);
+		
+		
+		
+			
+		
+	}
+	public static long[] query(long[][] arr,int l, int r) 
+	{  // sum on interval [l, r)
+		  long res[] = new long[4];
+		  res[0]=1;
+		  res[1]=0;
+		  res[2]=1;
+		  res[3]=0;
+		  for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
+		    if ((l & 1)!=0)
+		    {
+		    	res = add(add(res, arr[l]),multiply(res,arr[l]));
+		    	l++;
+		    }
+		    
+		    if ((r & 1)!=0)
+		    {
+		    	r--;
+		    	res = add(add(res,arr[r]),multiply(res,arr[r]));
+		    }
+		  }
+		  return res;
+		}
+
+	public static void modify(long[][] arr,int p, int value) 
+	{  
+		  for (arr[p += n] = fib(value); p > 1; p >>= 1)
+			  arr[p>>1] = add(add(arr[p],arr[p^1]),multiply(arr[p],arr[p^1]));
+		  
+	}
+	public static long[] fib(long n)
+	{
+		long F[] = new long[4];
+		F[0] = 1;
+		F[1] = 1;
+		F[2] = 1;
+		F[3] = 0;
+		
+		F = pow(n-1,F);
+		return F;
+	}
+	public static long[] pow(long n,long[] F)
+	{
+		if(n==0 || n==1)
+			return F;
+		long M[] = new long[4];
+		
+		M[0] = 1;
+		M[1] = 1;
+		M[2] = 1;
+		M[3] = 0;
+		 F = pow(n/2,F);
+		  F = multiply(F, F);
+		 
+		  if (n%2 != 0)
+		     F = multiply(F, M);
+		return F;
+		
+	}
+	public static long[] multiply(long[] F,long[] M)
+	{
+		long x =  F[0]*M[0] + F[1]*M[2];
+		long y =  F[0]*M[1] + F[1]*M[3];
+		long z =  F[2]*M[0] + F[3]*M[3];
+		long w =  F[2]*M[1] + F[3]*M[3];
+		long[] ans = new long[4];
+		ans[0] = x%mod;
+		ans[1] = y%mod;
+		ans[2] = z%mod;
+		ans[3] = w%mod;
+		return ans;
+	}
+	public static long[] add(long[] F,long[] M)
+	{
+		long[] ans = new long[4];
+		
+		ans[0]=F[0]+M[0];
+		ans[1]=F[1]+M[1];
+		ans[2]=F[2]+M[2];
+		ans[3]=F[3]+M[3];
+		
+		return ans;
+	}
+}

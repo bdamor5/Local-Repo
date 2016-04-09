@@ -1,0 +1,37 @@
+import java.util.*;
+class Q1 
+{
+	public static void main(String[] args)
+	{
+		Scanner sc = new Scanner(System.in);
+		int mod = 1000000007;
+		int t = sc.nextInt();
+		while(t-->0)
+		{
+			long n = sc.nextLong();
+			long k = sc.nextLong();
+			long ans = k;
+			ans = ans * power(k-1,n-1,mod);
+			ans%=mod;
+			System.out.println(ans);
+			
+		}
+	}
+	public static long power(long x,long y,long z)
+	{
+		long ans=1;
+		long square=x;
+		if(y==0)
+		    return 1;
+		while(y!=0)
+		{
+		    if(y%2==1)
+		        ans=ans*square;
+		    square=(square*square)%z;
+		    y=y/2;
+		    if(ans>z)
+		        ans=ans%z;
+		}
+		return ans;
+	}
+}

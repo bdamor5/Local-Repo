@@ -1,0 +1,33 @@
+import java.util.*;
+public class Q2 
+{
+	public static void main(String[] args)
+	{
+		Scanner sc = new Scanner(System.in);
+		long c = sc.nextLong();
+		long m = sc.nextLong();
+		int n = sc.nextInt();
+		long arr[] = new long[2*n];
+		arr[0] = 0;
+		arr[1] = c;
+		for(int i=2;i<arr.length;i++)
+			arr[i] = (arr[i-1]+arr[i-2])%m;
+		
+		pair[] p = new pair[n];
+		int x = 0;
+		for(int i=2;i<arr.length;i+=2)
+		{
+			p[x++] = new pair(arr[i],arr[i+1]);
+		}
+ 	}
+}
+class pair
+{
+	long a;
+	long b;
+	pair(long a,long b)
+	{
+		this.a = a;
+		this.b = b;
+	}
+}

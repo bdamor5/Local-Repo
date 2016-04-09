@@ -1,0 +1,76 @@
+import java.util.*;
+class Q1 
+{
+	static int mod = 1000000007;
+	public static void main(String[] args)
+	{
+		Scanner sc = new Scanner(System.in);
+		
+		long n = sc.nextLong();
+		long m = sc.nextLong();
+		long arr[] = new long[(int)n];
+		long pre[] = new long[(int)n+1];
+		for(int i=0;i<n;i++)
+		{
+			arr[i] = sc.nextLong();
+			pre[i+1] = pre[i] + arr[i];
+		}
+		
+		long fun[] = new long[(int)n];
+		fun[0] = fib(arr[0]);
+		long prev1 = fib(arr[0]);
+		long prev2 = fib(arr[0]+1);
+		
+		for(int i=1;i<n;i++)
+		{
+			fun[i] = (fun[i-1]+(fib(arr[i])*prev2)%mod + (fib(arr[i]-1)*prev1)%mod)%mod;
+			//fun[i] = (fun[i] + fib(arr[i]))%mod;
+			prev1=(prev1+fib(arr[i]))%mod;
+			prev2=(prev2+fib(arr[i]+1))%mod;
+			System.out.println(fun[i-1]);
+		}
+
+		
+		
+			
+		
+	}
+	public static long fib(long n)
+	{
+		long F[][] = new long[2][2];
+		F[0][0] = 1;
+		F[0][1] = 1;
+		F[1][0] = 1;
+		F[1][1] = 0;
+		pow(n,F);
+		return F[0][0];
+	}
+	public static void pow(long n,long[][] F)
+	{
+		if(n==0 || n==1)
+			return;
+		long M[][] = new long[2][2];
+		
+		M[0][0] = 1;
+		M[0][1] = 1;
+		M[1][0] = 1;
+		M[1][1] = 0;
+		  pow(n/2,F);
+		  multiply(F, F);
+		 
+		  if (n%2 != 0)
+		     multiply(F, M);
+		
+	}
+	public static void multiply(long[][] F,long[][] M)
+	{
+		long x =  F[0][0]*M[0][0] + F[0][1]*M[1][0];
+		long y =  F[0][0]*M[0][1] + F[0][1]*M[1][1];
+		long z =  F[1][0]*M[0][0] + F[1][1]*M[1][0];
+		long w =  F[1][0]*M[0][1] + F[1][1]*M[1][1];
+		F[0][0] = x%mod;
+		F[0][1] = y%mod;
+		F[1][0] = z%mod;
+		F[1][1] = w%mod;
+	}
+}
