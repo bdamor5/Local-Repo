@@ -1,0 +1,101 @@
+/*****************************************************************************
+ *             Intership Programming Contest : Operator Jumble               *
+ *             -----------------------------------------------               *
+ * To allow contest participants to test a function which accepts aa array   *
+ * of integers and inserts the arithmetic operators +,-,/,* and brackets ()  *
+ * in between to equate the result to the last element RHS of the array      *
+ * The contest will be evalauted for a 6-8 integer array                     *
+ * Additional marks will be given for entries which can handle larger arrays *
+ * Input  : I.1) Number of elements in array                                 *
+ *          I.2) An array of integers (the last being RHS)                   *
+ * Outputs: O.1) A string with operators +,-,/,* and () interpolated         *
+ *                                                                           *
+ * Only the first solution needs to be provided                              *
+ * Division operator is only valid for exact division (and not by 0)         *
+ *                                                                           *
+ * Note : We have two independent large iterations for a n integer array     *
+ *        1) We need to generate 4^(n-2) possible combinations of operators  *
+ *        2) We need to generate (n-2)! possible sequences of execution      *
+ *        The permutations code (2) can be accessed from the web and modified*
+ *        Our solution  uses the algorithms published by tamu CS dept.       *
+ *        Generating the 4^(n-2) possible combinations is also fairly easy   *
+ *        Once you have identified a set of operands  and the  sequence      *
+ *        you can compute the result                                         *
+ *        terminate when the result is equal to RHS                          *
+ *                                                                           *
+ * Hint : You can generate all possible combinations of operators and then   *
+ *        permute sequence of execution for each combination                 *
+ *        Alternately you can generate permutations of execution and for     *
+ *        each permutation generate all possible combinations of operators   *
+ *        Execution time will depend on which is computed more efficiently   *
+ *        It is also possible to generate and store all permutations and     *
+ *        combinations at one shot and then mix and match                    *
+ *        Finally you have to design an efficient method to evaluate the     *
+ *        expression composed of set of operators and sequence of operations *
+ *        lastly you need to capture your solution as an expression          *
+ *        You canlook for various unix utilities/libraries available         *
+ *                                                                           *
+ *****************************************************************************/
+
+/*****************************************************************************
+ *                                  Sample                                   *
+ *                                  ------                                   *
+ * The contest can be explained with certain sample inputs and outputs       *
+ *                                                                           *
+ *  Example 1:                                                               *
+ *  I.1 = 5 I.2 = 2 2 2 2 8                                                  *
+ *  O.1 = String 2 + 2 + 2 + 2    OR  (((2 + 2) + 2) + 2)                    *
+ *                                                                           *
+ *  Example 2:                                                               *
+ *  I.1 = 4 I.2 = 2 2 2 8                                                    *
+ *  O.1 = String (2 + 2) * 2     OR   ((2 + 2) * 2)                          *
+ *        String 2 * 2 * 2       OR   ((2 * 2) * 2)                          *
+ *                                                                           *
+ *  Example 3:                                                               *
+ *  I.1 = 5 I.2 = 5 4 3 2 1 15                                               *
+ *  O.1 = String (5 * 4 - 3 - 2) * 1     OR   ((((5 * 4) - 3) - 2) * 1)      *
+ *  O.1 = String (5 * 4 - 3 - 2) / 1     OR   ((((5 * 4) - 3) - 2) / 1)      *
+ *  O.1 = String (5 + 4 * 3 - 2) * 1     OR   (((5 + (4 * 3)) - 2) * 1)      *
+ *  O.1 = String (5 + 4 + 3 * 2) / 1     OR   (((5 + 4) + (3 * 2)) / 1)      *
+ *                                                                           *
+ *  Example 4:                                                               *
+ *  I.1 = 5 I.2 = 6 5 4 3 2 32                                               *
+ *  O.1 = String 6 * 5 - 4 + 3 * 2       OR   (((6 * 5) - 4) + (3 * 2))      *
+ *  O.1 = String 6 + 5 * 4 + 3 * 2       OR   ((6 + (5 * 4)) + (3 * 2))      *
+ *                                                                           *
+ * The tests would cover many more complex cases                             *
+ * There will be some tests to determine how much length your algorithm can  *
+ * process in 2 minutes on our machine                                       *
+ *                                                                           *
+ *****************************************************************************/
+
+/*****************************************************************************
+ * ZIP file contains:                                                        *
+ *     ReadMe file              : Explains the contest                       *
+ *     testOpJumble.c           : Only end section of file to be modified    *
+ *     (you can edit testOpJumble.c and then test your entry)                *
+ *     makefile (for unix)      : create executable OpJumble by typing make  *
+ *     test by typing ./OpJumble -i <test file> -o <output file>             *
+ *     (the test program will direct standard output to the outpput file)    *
+ *     test/t1,t2...            : test files                                 *
+ *     test/t1.out,t2.out  ...  : expected outputs                           *
+ * 1) edit testOpJumble.c (add your code - do not add any include files)     *
+ * 2) Create OpJumble by typing make on the command line                     *
+ * 3) Test OpJumble code on the tests provided and check solution            *
+ * 4) Debug your code to create correct expression                           *
+ * 5) Test your file with different (and additional) test files              *
+ * 6) Remember that the contest tests will be more severe                    *
+ * 7) Submit your entry (your additional code) codzilla.org.in               *
+ *                                                                           *
+ *****************************************************************************/
+
+/*****************************************************************************
+ *                       Source Code Organisation                            *
+ *                       ------------------------                            *
+ * testOpJumble.c                                                            *
+ * This file allows the participant to test his function for correctness     *
+ * This file contains C++ code which opens the input stream, reads a string, *
+ * and calls contestants function                                            *
+ * A correct entry will produce an equivalent file after sorting             *
+ *                                                                           *
+ *****************************************************************************/

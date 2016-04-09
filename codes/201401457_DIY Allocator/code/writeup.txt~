@@ -1,0 +1,67 @@
+########################################################################################################################################
+#						Memory Allocator                                                                       #
+# -------------------------------------------------------------------------------------------------------------------------------------# 
+#																       #
+# Here I have implemented 32-bit and 64-bit clean allocator based on an address ordered segregate free list with range of size         #
+# 2^k where k = 5 to 14, best fit placement, and boundary tag coalescing.                                                              #   
+#					  ________ _________________________ _________________________ _____________________ ________  #
+# Every free block looks like      ----> | Header | prev free block pointer | next free block pointer | Remaining free size | Footer | #
+#				         |________|_________________________|_________________________|_____________________|________| #
+#     				          ________ ______________ ________	                                                       #
+# Every allocated block looks like ----> | Header | Payload      | Footer |                                                            #
+#				         |________|______________|________|                                                            #
+# Blocks are aligned to double-word boundaries. i.e. 8 byte aligned in 32 bit machine and 16 byte for 64 bit machine.                  #
+#																       # 
+#																       #
+# Segregate Explicit Free list:--> In segregate explicit free list a global double pointer "list" is used to hold array of pointers.   #
+# 			           It holds starting free block of range of size 2^(k-1) to 2^(k) bytes where k = 5 to 14.             #
+#  				   i.e. list[0] hold the first free block of size in range of 16 to 32 bytes, list[1] hold the first   #
+#                                  free block of size in range of 32 to 64 bytes and so on.....                                        #
+#                                  By using segregate list we are minimizing search time. As for every size allocator looks for that   #
+#                                  range of free block and search block which has size greater or equal than demanded size. Thus by    #
+#				   using this we increase our utilization.                                                             #
+# Pointers in list: --> Here I used doubly linked list for linking free blocks. Here minimum block size is 4 words, 2 words are used   #
+#                       to store header and footer so we have still at least 2 words of memory. So we can use that memory to hold the  #
+#                       pointer s to the previous free block and next free block of that range size. So our free block look like as    #
+#                       I mentioned earlier.                                                                                           #
+#																       #
+# Macros to get and set the pointers:--> #define PREV_FREE_BLKP(bp) (*(void **) (bp)) 						       #
+#                                        #define NEXT_FREE_BLKP(bp) (*(void **) (bp + WSIZE))                                          #
+#                                        #define SET_PREV_FREE(bp, prev) (*((void **)(bp)) = prev)                                     #
+#                                        #define SET_NEXT_FREE(bp, next) (*((void **)(bp + WSIZE)) = next)                             #
+#                                  												       #
+#                                        Here these macros take a block pointer and type caste them to pointer to the pointer and then #
+#					 dereference them so we have a 'pointer' which is of type 'pointer' and a size of word size.   #
+#															               #
+# Functions for inserting and deleting free block from segregate list:-->							       #
+#																       #
+# 					static void insert_block(void *bp);							       #
+#					static void delete_block(void *bp);							       #
+#																       #
+#                                       Both the function take a block pointer and insert or delete them from appropriate list and     #
+#                                       manipulate their previous and next free block pointers accordingly. Inserting is done on       #
+#					address order manner.									       #
+#  																       #
+# Best fit algorithm:--> Given a "size", first we have to find its appropriate free list head pointer. Then we look at all block       #
+#                        whose size is greater than "size" and find minimum of them and return that block pointer. By doing so         #
+#			 we are minimize the internal fragmentation and maxmize the utilization. But by doing so we are also           #
+#                        increasing number of operation to find suitable block. So here is a tradeoff between utilization and          #
+#                        throughput.                                                                                                   #
+# 																       #
+# changes is mm_realloc:--> Given a old block pointer "ptr" and new size "size" we have to reallocate block of memory of at least      #
+#                           "size" bytes of payload. So one way we can minimize the operations is if the block "ptr" is already a      #
+# 		            block with at least "size" bytes of payload, then "ptr" is returned. By doing this we avoid call to "malloc"
+#                           and also avoid call to "memcopy" function but we underutilize by giving memory greater than what it wants. #
+#			    We also optimize further like if next block of 'ptr' is free and combining them make payload of size       #
+# 			    greater than "size" then extend that block and return the 'ptr'. By doing so we avoid call to "malloc"     #
+#			    and "memcopy" function which takes more time to run. But here also we underutilize by giving extra memory. #
+#																       #
+# changes in checkheap function:--> Following functionalities were added in checkheap funnction.                                       #
+#				    1. check if every free block in segregate free list is free, if not print Error msg 	       #
+#				    2. check if there are contiguos free block which escaped coalescing, if so print Error msg	       #
+#				    3. check is every free block actually in segregate free list, if not print Erro msg		       #
+#				    4. check do the pointers in the heap block point to valid heap address, if not print Error msg     #
+#				    5. check do the pointer in segregate free list point to valid address, if not print Error msg      #
+# 																       #
+#                                                                                                                                      #
+########################################################################################################################################

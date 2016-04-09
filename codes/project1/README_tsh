@@ -1,0 +1,25 @@
+##############################################################################################################################
+						Tiny Shell Project							     #
+-----------------------------------------------------------------------------------------------------------------------------#
+Author: Uttam Chaudhari													     #
+E-mail: 20140457@daiict.ac.in												     #
+-----------------------------------------------------------------------------------------------------------------------------#
+File: tsh.c														     #
+															     #
+Functions:														     #
+-----------------------------------------------------------------------------------------------------------------------------#
+int main(int argc, char **argv) 		--> print prompt "tsh".							     #
+void eval(char *cmdline)        		--> Evaluate commandline argument and call functions accordingly.	     #
+int parseline(const char *cmdline, char **argv) --> Parse the command line and build the argv array. Return true if the user #
+						    has requested a BG job, false if the user has requested a FG job.        #
+int builtin_cmd(char **argv)			--> If command is built in execute immidiately else return 0.                #
+void do_bgfg(char **argv)			--> Do error checking and then execute the build in command bg and fg.       #
+void waitfg(pid_t pid)				--> Wait for job which is in forground.                                      #
+void sigchld_handler(int sig)			--> The handler for SIGCHLD signal which reaps all available zombie children,#
+					            but doesn't wait for any other currently running children to terminate.  #
+void sigint_handler(int sig)  			--> The handler for SIGINT signal which catch the signal and send it along   # 
+						    forground job.       						     #
+void sigtstp_handler(int sig)			--> The handler for SIGTSTP signal which catch the signal and send it along  # 
+						    forground job.							     #
+															     #
+##############################################################################################################################
